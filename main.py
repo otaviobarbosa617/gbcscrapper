@@ -4,10 +4,10 @@ import requests
 html_text = requests.get("https://www.georgebrown.ca/program-finder?year=2021").text
 soup = BeautifulSoup(html_text, "lxml")
 
-allPrograms = soup.find("div", id = "block-program-finder-content")
-school = allPrograms.find("span", class_ = "field field--name-title field--type-string field--label-hidden").text
-program = allPrograms.find("a", class_ = "program-title-link").text
-credential = allPrograms.find("td", class_ = "views-field views-field-field-credential").text
-international = allPrograms.find("span", class_ = "intern-availability").text
-
-print(f"Program name is {program}, the credential is {credential.strip()}. Accepts international students? {international}")
+for name in soup.find_all("table", class_ = "views-table views-view-table cols-7 program-finder-table"):
+    for title in name.find_all("span", class_ = "field field--name-title field--type-string field--label-hidden"):
+        for programName in name.find_all("a", class_ = "program-title-link"):
+            credential = name.find("td", class_ = "views-field views-field-field-credential").text
+            international = name.find("span", class_ = "intern-availability").text
+            duration = name.find("div", class_ = "program-overview-content duration").text.replace("Duration:", "")
+            print(f"{title.get_text()} - {programName.get_text()} - {credential.strip()} - {international} - {duration}")
